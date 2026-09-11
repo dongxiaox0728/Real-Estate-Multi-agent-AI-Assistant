@@ -1,2 +1,3 @@
 .env
 node_modules/
+data/listing_embeddings.json

@@ -1,15 +1,8 @@
 import readline from "readline";
 import "dotenv/config";
-import {
-  buildKnowledgeIndex,
-  answerKnowledgeQuestion,
-} from "./final-orchestrator";
+import { answerKnowledgeQuestion } from "./final-orchestrator";
 
 async function main() {
-  console.log("Building knowledge index...");
-
-  const index = await buildKnowledgeIndex();
-
   console.log("RAG Knowledge Agent is ready.");
   console.log("Type 'exit' to quit.");
 
@@ -26,10 +19,7 @@ async function main() {
       }
 
       try {
-        const answer = await answerKnowledgeQuestion(
-          query,
-          index
-        );
+        const answer = await answerKnowledgeQuestion(query);
 
         console.log("\nAgent:");
         console.log(answer);

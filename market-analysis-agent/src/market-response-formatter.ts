@@ -70,28 +70,53 @@ export function formatMonth(month: string): string {
 
 function marketMetricLabel(metric: MarketMetric): string {
   const labels: Record<MarketMetric, string> = {
-    avg_close_price: "average close price",
-    median_close_price: "median close price",
-    avg_dom: "average days on market",
-    list_to_close_ratio: "average list-to-close price ratio",
-    price_per_sqft: "average price per square foot",
-    sales_count: "sales count",
+    avg_close_price: "Average close price",
+    median_close_price: "Median close price",
+    avg_dom: "Average days on market",
+    list_to_close_ratio: "Average list-to-close price ratio",
+    price_per_sqft: "Average price per square foot",
+    sales_count: "Sales count",
   };
 
   return labels[metric];
 }
 
+function marketMetricEmoji(metric: MarketMetric): string {
+  const emojis: Record<MarketMetric, string> = {
+    avg_close_price: "💰",
+    median_close_price: "💵",
+    avg_dom: "📅",
+    list_to_close_ratio: "📈",
+    price_per_sqft: "📐",
+    sales_count: "🏠",
+  };
+
+  return emojis[metric];
+}
+
 function trendMetricLabel(metric: TrendMetric): string {
   const labels: Record<TrendMetric, string> = {
-    close_price: "average close price",
-    avg_dom: "average days on market",
-    price_per_sqft: "average price per square foot",
-    sales_count: "sales count",
+    close_price: "Average close price",
+    avg_dom: "Average days on market",
+    price_per_sqft: "Average price per square foot",
+    sales_count: "Sales count",
     list_to_original_price_ratio:
-      "list-to-original-price ratio",
+      "List-to-original-price ratio",
   };
 
   return labels[metric];
+}
+
+function trendMetricEmoji(metric: TrendMetric): string {
+  const emojis: Record<TrendMetric, string> = {
+    close_price: "💰",
+    avg_dom: "📅",
+    price_per_sqft: "📐",
+    sales_count: "🏠",
+    list_to_original_price_ratio: "📈",
+  };
+
+  return emojis[metric];
 }
 
 function formatMarketMetricValue(
@@ -181,23 +206,15 @@ function formatSummary(
   const city = result.city ?? "the selected market";
 
   return [
-    `Over the past ${result.months} months, ${formatInteger(
-      result.salesCount
-    )} ${result.propertyType.toLowerCase()} properties sold in ${city}.`,
-    `The average close price was ${formatCurrency(
-      result.avgClosePrice
-    )}, while the median close price was ${formatCurrency(
-      result.medianClosePrice
-    )}.`,
-    `Homes spent an average of ${formatNumber(
-      result.avgDaysOnMarket
-    )} days on the market.`,
-    `The average list-to-close price ratio was ${formatPercent(
-      result.avgListToCloseRatio
-    )}, and the average price per square foot was ${formatCurrency(
-      result.avgPricePerSqft
-    )}.`,
-  ].join(" ");
+    `Over the past ${result.months} months in ${city}:`,
+    "",
+    `🏠 Homes sold: ${formatInteger(result.salesCount)}`,
+    `💰 Average close price: ${formatCurrency(result.avgClosePrice)}`,
+    `💵 Median close price: ${formatCurrency(result.medianClosePrice)}`,
+    `📅 Average days on market: ${formatNumber(result.avgDaysOnMarket)} days`,
+    `📈 Average list-to-close ratio: ${formatPercent(result.avgListToCloseRatio)}`,
+    `📐 Average price per square foot: ${formatCurrency(result.avgPricePerSqft)}`,
+  ].join("\n");
 }
 
 function formatMetric(
@@ -209,7 +226,11 @@ function formatMetric(
     result.value
   );
 
-  return `Over the past ${result.months} months, the ${label} in ${result.city} was ${value}.`;
+  return [
+    `Over the past ${result.months} months in ${result.city}:`,
+    "",
+    `${marketMetricEmoji(result.metric)} ${label}: ${value}`,
+  ].join("\n");
 }
 
 function formatTrend(
@@ -218,27 +239,30 @@ function formatTrend(
   if (result.monthlyData.length === 0) {
     return `No valid monthly data was available for the ${trendMetricLabel(
       result.metric
-    )} in ${result.city} over the past ${result.months} months.`;
+    ).toLowerCase()} in ${result.city} over the past ${result.months} months.`;
   }
 
-  const monthlyText = result.monthlyData
-    .map(
-      (row) =>
-        `${formatMonth(row.month)}: ${formatTrendValue(
-          result.metric,
-          row.value
-        )}`
-    )
-    .join("; ");
+  const emoji = trendMetricEmoji(result.metric);
+  const monthlyLines = result.monthlyData.map(
+    (row) =>
+      `${emoji} ${formatMonth(row.month)}: ${formatTrendValue(
+        result.metric,
+        row.value
+      )}`
+  );
 
   const slopeText = formatSlope(
     result.slope,
     result.slopeUnit
   );
 
-  return `For ${result.city}, the ${trendMetricLabel(
-    result.metric
-  )} over the past ${result.months} months was ${monthlyText}. The linear-regression slope was ${slopeText}.`;
+  return [
+    `${trendMetricLabel(result.metric)} in ${result.city} over the past ${result.months} months:`,
+    "",
+    ...monthlyLines,
+    "",
+    `📊 Linear-regression slope: ${slopeText}`,
+  ].join("\n");
 }
 
 function formatBuyerSellerMarket(
@@ -257,11 +281,16 @@ function formatBuyerSellerMarket(
     buyers_market: "buyer's market",
   } as const;
 
-  return `The average days on market in ${result.city} over the past ${result.months} months was ${formatNumber(
-    result.avgDaysOnMarket
-  )} days. Based on the rule of under 30 days for a seller's market, 30–60 days for a balanced market, and over 60 days for a buyer's market, this is a ${
-    marketLabels[result.marketType]
-  }.`;
+  return [
+    `${result.city} is a *${marketLabels[result.marketType]}*.`,
+    "",
+    `📅 Average days on market: ${formatNumber(result.avgDaysOnMarket)} days`,
+    "",
+    "Rules used:",
+    "• Under 30 days → Seller's market",
+    "• 30–60 days → Balanced market",
+    "• Over 60 days → Buyer's market",
+  ].join("\n");
 }
 
 function formatCompetitiveness(
@@ -277,12 +306,20 @@ function formatCompetitiveness(
   const ratio = formatNumber(
     result.listToOriginalPriceRatio
   );
+  const classification =
+    result.competitiveness === "competitive"
+      ? "competitive"
+      : "not classified as competitive";
 
-  if (result.competitiveness === "competitive") {
-    return `The average list-to-original-price ratio in ${result.city} over the past ${result.months} months was ${ratio}. Because the ratio is above 1, homes were selling above their original asking price on average, which indicates a competitive market under this rule.`;
-  }
-
-  return `The average list-to-original-price ratio in ${result.city} over the past ${result.months} months was ${ratio}. Because the ratio is not above 1, the market is not classified as competitive under this rule.`;
+  return [
+    `${result.city} is *${classification}* under this rule.`,
+    "",
+    `📈 Average list-to-original-price ratio: ${ratio}`,
+    "",
+    "Rules used:",
+    "• Ratio above 1 → Competitive",
+    "• Ratio of 1 or below → Not competitive",
+  ].join("\n");
 }
 
 function ratingText(
@@ -320,24 +357,38 @@ function indicatorLabel(
 function formatGoodTimeToBuy(
   result: GoodTimeToBuyResult
 ): string {
-  const indicatorText = result.indicators
-    .map((indicator) => {
-      const status = indicator.favorable
-        ? "buyer-favorable"
-        : "not buyer-favorable";
+  const indicatorLines = result.indicators.map((indicator) => {
+    const status = indicator.favorable
+      ? "✅ Buyer-favorable"
+      : "❌ Not buyer-favorable";
 
-      return `${indicatorLabel(
-        indicator.metric
-      )}: slope ${formatSlope(
-        indicator.slope,
-        indicator.slopeUnit
-      )} (${status})`;
-    })
-    .join("; ");
+    return `${status} — ${indicatorLabel(
+      indicator.metric
+    )}: slope ${formatSlope(
+      indicator.slope,
+      indicator.slopeUnit
+    )}`;
+  });
 
-  return `Based on the most recent 3 months, ${result.city} scored ${result.score}/5 on your buyer-favorability indicators, which you classify as ${ratingText(
-    result.rating
-  )}. ${indicatorText}.`;
+  return [
+    `Based on the most recent 3 months, ${result.city} scored *${result.score}/5* on the buyer-favorability indicators, rated *${ratingText(result.rating)}*.`,
+    "",
+    ...indicatorLines,
+    "",
+    "Buyer-favorable rules:",
+    "• Close-price slope < 0",
+    "• Average-DOM slope > 0",
+    "• Price-per-square-foot slope < 0",
+    "• List-to-original-price-ratio slope < 0",
+    "• Sales-count slope < 0",
+    "",
+    "Rating rules:",
+    "• 5 → Wonderful",
+    "• 4 → Good",
+    "• 3 → Somewhat good",
+    "• 2 → Not so great",
+    "• 0–1 → Poor",
+  ].join("\n");
 }
 
 function formatCondition(

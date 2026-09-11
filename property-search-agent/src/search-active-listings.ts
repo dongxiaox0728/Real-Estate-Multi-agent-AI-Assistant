@@ -124,8 +124,6 @@ export async function searchActiveListings(
 
   sql += ` ORDER BY L_SystemPrice ASC LIMIT ${safeLimit} OFFSET ${offset}`;
 
-  console.log("SQL:", sql);
-  console.log("Params:", params);
 
   if (params.some((value) => value === undefined)) {
     throw new Error("SQL parameters contain undefined");

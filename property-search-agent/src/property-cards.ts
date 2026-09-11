@@ -219,43 +219,52 @@ export function formatActiveListings(
     return "I could not find any active listings matching those filters.";
   }
 
-  const cards = listings.map(
-    (listing, index) => {
-      const card =
-        activeListingToCard(listing);
+  const cards = listings.map((listing, index) => {
+    const agentName = [
+      listing.agentFirstName,
+      listing.agentLastName,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
-      return [
-        `[${card.badge}]`,
-        `${index + 1}. ${card.price}`,
-        card.specs,
-        "",
-        card.address,
-        card.location,
-        "",
-        [
-          card.propertyType,
-          card.yearBuilt,
-        ]
-          .filter(Boolean)
-          .join(" · "),
-        card.daysOnMarket,
-        card.amenities.length > 0
-          ? `Amenities: ${card.amenities.join(" · ")}`
-          : "",
-        card.agent
-          ? `Listed by ${card.agent}`
-          : "",
-        card.office
-          ? `Office: ${card.office}`
-          : "",
-      ]
-        .filter((line) => line !== null && line !== "")
-        .join("\n");
+    const features: string[] = [];
+
+    if (listing.hasView) {
+      features.push("View");
     }
-  );
+
+    if (listing.pool) {
+      features.push("Pool");
+    }
+
+    return [
+      `🏠 *${index + 1}. ${listing.address ?? "Address unavailable"}*`,
+      `📍 ${listing.city ?? ""}${listing.zip ? `, ${listing.zip}` : ""}`,
+      `💰 *${formatCurrency(listing.price)}*`,
+      `🛏 ${listing.beds ?? "N/A"} beds · 🛁 ${listing.baths ?? "N/A"} baths · 📐 ${formatNumber(listing.sqft)} sqft`,
+      listing.propertyType || listing.yearBuilt
+        ? `🏘️ ${listing.propertyType ?? "Property"}${listing.yearBuilt ? ` · 🏗️ Built ${listing.yearBuilt}` : ""}`
+        : "",
+      listing.daysOnMarket !== null &&
+      listing.daysOnMarket !== undefined
+        ? `📅 ${listing.daysOnMarket} days on market`
+        : "",
+      features.length > 0
+        ? `✨ ${features.join(" · ")}`
+        : "",
+      agentName
+        ? `👤 Listed by ${agentName}`
+        : "",
+      listing.officeName
+        ? `🏢 ${listing.officeName}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+  });
 
   return [
-    `I found ${listings.length} matching active listings:`,
+    `I found ${listings.length} matching homes:`,
     "",
     cards.join("\n\n"),
   ].join("\n");

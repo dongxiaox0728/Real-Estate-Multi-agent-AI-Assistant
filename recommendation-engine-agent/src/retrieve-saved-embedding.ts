@@ -4,7 +4,8 @@ import path from "node:path";
 import type { ListingEmbedding } from "./shared-types";
 
 const EMBEDDING_FILE = path.resolve(
-  process.cwd(),
+  __dirname,
+  "..",
   "data",
   "listing_embeddings.json"
 );

@@ -60,9 +60,6 @@ export async function recommendListings(
   const candidates =
     await getCandidateListings(cleanedTargetId);
 
-  console.log(
-    `Total active candidates: ${candidates.length}`
-  );
 
   // 4. Calculate the hybrid score for each candidate
   // that has a saved embedding.
@@ -93,9 +90,6 @@ export async function recommendListings(
     });
   }
 
-  console.log(
-    `Candidates with embeddings: ${scoredCandidates.length}`
-  );
 
   // 5. Rank candidates and keep only the top recommendations.
   const topCandidates = scoredCandidates

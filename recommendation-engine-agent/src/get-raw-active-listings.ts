@@ -14,11 +14,22 @@ interface PropertyListingRow extends RowDataPacket {
   remarks: string | null;
 }
 
+/**
+ * Fetch one deterministic batch of active listings.
+ *
+ * `limit` controls the batch size and `offset` controls where the batch starts.
+ * The ORDER BY is important so pagination is stable across batches.
+ */
 export async function getActiveListings(
-  limit = 20
+  limit = 100,
+  offset = 0
 ): Promise<PropertyListing[]> {
   if (!Number.isInteger(limit) || limit <= 0) {
     throw new Error("The listing limit must be a positive integer.");
+  }
+
+  if (!Number.isInteger(offset) || offset < 0) {
+    throw new Error("The listing offset must be a non-negative integer.");
   }
 
   const sql = `
@@ -36,12 +47,14 @@ export async function getActiveListings(
     WHERE L_Status = ?
       AND L_Remarks IS NOT NULL
       AND TRIM(L_Remarks) <> ''
-    LIMIT ?
+    ORDER BY L_ListingID
+    LIMIT ? OFFSET ?
   `;
 
   const [rows] = await pool.query<PropertyListingRow[]>(sql, [
     "Active",
     limit,
+    offset,
   ]);
 
   return rows.map((row) => ({
@@ -50,7 +63,7 @@ export async function getActiveListings(
     city: row.city,
     bedrooms: row.bedrooms,
     bathrooms: row.bathrooms,
-    SquareFeet: row.lotSizeSquareFeet,
+    SquareFeet: row.SquareFeet,
     yearBuilt: row.yearBuilt,
     price: row.price,
     remarks: row.remarks,
