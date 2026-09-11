@@ -117,10 +117,26 @@ export async function getMarketTrend(
   }
 
   if (months) {
-    conditions.push(
-      "CloseDate >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)"
-    );
-    params.push(months);
+    // Use the most recent month available in the dataset for this city/property type
+    // instead of the current calendar date. This keeps historical/static datasets usable.
+    const lookbackMonths = Math.max(0, months - 1);
+
+    conditions.push(`
+      CloseDate >= DATE_SUB(
+        DATE_FORMAT(
+          (
+            SELECT MAX(latest.CloseDate)
+            FROM california_sold AS latest
+            WHERE latest.City = ?
+              AND latest.PropertyType = ?
+          ),
+          '%Y-%m-01'
+        ),
+        INTERVAL ? MONTH
+      )
+    `);
+
+    params.push(city, propertyType, lookbackMonths);
   }
 
   const whereClause = conditions.join(" AND ");

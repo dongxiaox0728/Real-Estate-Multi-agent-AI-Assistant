@@ -49,16 +49,15 @@ export async function getCandidateListings(
     ]
   );
 
-  return rows.map((row) => ({
-    listingId: String(row.listingId),
-    propertyType: row.propertyType,
-    city: row.city,
-    bedrooms: row.bedrooms,
-    bathrooms: row.halfBathrooms,
-    squareFeet: row.squareFeet,
-    SquareFeet: row.lotSizeSquareFeet,
-    yearBuilt: row.yearBuilt,
-    price: row.price,
-    remarks: row.remarks,
-  }));
+return rows.map((row) => ({
+  listingId: String(row.listingId),
+  propertyType: row.propertyType,
+  city: row.city,
+  bedrooms: row.bedrooms,
+  bathrooms: row.bathrooms,
+  SquareFeet: row.SquareFeet,
+  yearBuilt: row.yearBuilt,
+  price: row.price,
+  remarks: row.remarks,
+}));
 }
