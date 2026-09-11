@@ -27,27 +27,26 @@ flowchart TB
     OPENCLAW["OpenClaw"]
     SKILL["Custom skill.md<br/>Intent Routing & Orchestration"]
 
-    ROUTER((" "))
-
     SEARCH["🔍 Property Search"]
     MARKET["📊 Market Analysis"]
     REC["🏠 Recommendation"]
     RAG["📚 Knowledge (RAG)"]
     EMAIL["✉️ Email"]
+    SPACER[" "]
 
     USER --> UI
     UI --> OPENCLAW
     OPENCLAW --> SKILL
 
-    SKILL --> ROUTER
+    SKILL --> SEARCH
+    SKILL --> MARKET
+    SKILL --> REC
+    SKILL --> RAG
+    SKILL --> EMAIL
 
-    ROUTER --> SEARCH
-    ROUTER --> MARKET
-    ROUTER --> REC
-    ROUTER --> RAG
-    ROUTER --> EMAIL
+    EMAIL ~~~ SPACER
 
-    style ROUTER fill:transparent,stroke:transparent
+    style SPACER fill:transparent,stroke:transparent
 ```
 
 ## Future Improvements
