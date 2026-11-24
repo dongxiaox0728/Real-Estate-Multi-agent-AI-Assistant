@@ -1,13 +1,3 @@
----
-name: recommendation-engine
-description: >
-  Recommend similar active real-estate listings when the user provides a
-  specific listing ID. The skill runs the existing recommendation engine,
-  which compares the target listing with active listings using structured
-  similarity and semantic embedding similarity, then returns the most similar
-  properties with comparable-sales price validation.
----
-
 # Recommendation Engine
 
 Use this skill when the user wants properties similar to a specific listing

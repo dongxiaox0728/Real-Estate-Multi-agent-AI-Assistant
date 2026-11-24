@@ -64,26 +64,26 @@ general model knowledge.
 
 The orchestrator handles:
 
-- Property search: active listings based on location, price, bedrooms,
+- **Property search**: active listings based on location, price, bedrooms,
   bathrooms, property type, amenities, and other listing requirements.
-- Market analysis: data-driven questions about prices, trends, sales activity,
+- **Market analysis**: data-driven questions about prices, trends, sales activity,
   market conditions, and related metrics.
-- Recommendation: similar listings based on a supported 10-digit listing ID.
-- Knowledge: conceptual real-estate questions, terminology, abbreviations,
+- **Recommendation**: Retrieve similar listings based on a supported 10-digit listing ID.
+- **Knowledge**: Answer conceptual real-estate questions, terminology, abbreviations,
   definitions, and industry concepts answered through the RAG knowledge system.
   This explicitly includes short questions such as `What does DOM mean?`,
   `What is MLS?`, `What is HOA?`, and `What is a comp?`.
-- Mixed intent: decomposes one request into intent-specific subqueries, runs
+- **Mixed intent**: decomposes one request into intent-specific subqueries, runs
   the appropriate internal agents sequentially, and combines their results.
-- Multi-turn clarification: continues an unfinished request across OpenClaw
+- **Multi-turn clarification**: continues an unfinished request across OpenClaw
   chat turns by using the conversation history to reconstruct the full working
   request before each one-shot CLI invocation.
-- Email service: recognizes email requests through the TypeScript intent
+- **Email service**: recognizes email requests through the TypeScript intent
   classifier, supports email-only follow-ups such as `Email this to me`, and
   supports mixed requests such as `Find me homes in Irvine and email them to
   user@example.com`. The orchestrator determines whether the email should use
   the current generated result or the most recent relevant result.
-- Email safety workflow: formats the selected content for email, creates a
+- **Email safety workflow**: formats the selected content for email, creates a
   pending draft, returns an email preview, requires explicit user approval
   before sending, and supports cancellation. An email must never be sent before
   the user explicitly approves the pending draft.
@@ -255,8 +255,8 @@ For approval:
 
 Example:
 
-```powershell
-npx tsx src/cli.ts "yes"
+```zsh
+npx tsx src/cli.ts 'yes'
 ```
 
 For cancellation:
@@ -267,8 +267,8 @@ For cancellation:
 
 Example:
 
-```powershell
-npx tsx src/cli.ts "no"
+```zsh
+npx tsx src/cli.ts 'no'
 ```
 
 The approval/cancellation turn must not rerun any content-generating agent and
@@ -302,14 +302,14 @@ User reply:
 
 Do NOT invoke:
 
-```powershell
-npx tsx src/cli.ts "Under $900k"
+```zsh
+npx tsx src/cli.ts 'Under $900k'
 ```
 
 Instead reconstruct and invoke:
 
-```powershell
-npx tsx src/cli.ts "What does DOM mean and find me homes in Irvine under $900k"
+```zsh
+npx tsx src/cli.ts 'What does DOM mean and find me homes in Irvine under $900k'
 ```
 
 If the next CLI response is:
@@ -322,8 +322,8 @@ and the user replies:
 
 invoke:
 
-```powershell
-npx tsx src/cli.ts "What does DOM mean and find me homes in Irvine under $900k with at least 3 bedrooms"
+```zsh
+npx tsx src/cli.ts 'What does DOM mean and find me homes in Irvine under $900k with at least 3 bedrooms'
 ```
 
 If the next CLI response is:
@@ -336,8 +336,8 @@ and the user replies:
 
 invoke:
 
-```powershell
-npx tsx src/cli.ts "What does DOM mean and find me homes in Irvine under $900k with at least 3 bedrooms and 2 bathrooms"
+```zsh
+npx tsx src/cli.ts 'What does DOM mean and find me homes in Irvine under $900k with at least 3 bedrooms and 2 bathrooms'
 ```
 
 This reconstruction must preserve every still-relevant intent from the original
@@ -388,12 +388,17 @@ TypeScript orchestrator already persisted the exact pending draft.
 
 ## Invocation
 
-Run the orchestration CLI from the project directory:
+Run the orchestration CLI from the checked-out project directory on this Mac:
 
-```powershell
-cd C:\Users\xdx20\IDX-AI-Engineer\Multi-agent-orchestration
-npx tsx src/cli.ts "<working-query>"
+```zsh
+cd "$HOME/Real-Estate-Multi-agent-AI-Assistant/Multi-agent-orchestration" &&
+  npx tsx src/cli.ts '<working-query>'
 ```
+
+Replace the placeholder with the complete query as a single argument. If building a
+shell command, single-quote the query and encode each literal apostrophe as
+`'\''` (for example, `'What'\''s the market like in Irvine?'`). This preserves
+dollar amounts, newlines, and other literal text in the query.
 
 `<working-query>` means:
 
@@ -409,7 +414,7 @@ Each invocation processes exactly one query, prints one response, and exits.
 
 Do not invoke:
 
-```powershell
+```zsh
 npx tsx src/cli.ts
 ```
 

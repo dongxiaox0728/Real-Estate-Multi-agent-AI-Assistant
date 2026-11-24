@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+.DS_Store
+
+/Multi-agent-orchestration/src/email/.drafts.json

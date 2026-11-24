@@ -1,5 +1,8 @@
-import "dotenv/config";
+import { resolve } from "node:path";
+import { config } from "dotenv";
 import OpenAI from "openai";
+
+config({ path: resolve(__dirname, "../../.env"), quiet: true });
 
 const apiKey = process.env.OPENAI_API_KEY;
 

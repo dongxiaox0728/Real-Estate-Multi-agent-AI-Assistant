@@ -1,5 +1,8 @@
-import "dotenv/config";
+import { resolve } from "node:path";
+import { config } from "dotenv";
 import mysql, { RowDataPacket } from "mysql2/promise";
+
+config({ path: resolve(__dirname, "../../.env"), quiet: true });
 
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,

@@ -178,6 +178,91 @@ The project is organized as a modular multi-agent system. Each agent is implemen
 └── README.md                 # Project overview, architecture, and usage documentation
 ```
 
+## How to run this agent locally:
+
+This agent currently only supports local chat with OpenClaw, and here are the detailed guidance of the installation and preparation to enable the agents to work:
+
+### 1. Install OpenClaw
+
+On macOS or Linux, run the official installer:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+During onboarding, choose **Quick start**, connect an inference provider, and enable the background Gateway. You can skip messaging channels for now. Check that the Gateway is running with `openclaw gateway status`. See the [OpenClaw installation guide](https://docs.openclaw.ai/install) for platform-specific instructions.
+
+### 2. Install the project and test the CLI
+
+Use Git and a supported Node.js version with npm available in your shell. The clone location below matches the path in the OpenClaw skill.
+
+```bash
+git clone https://github.com/dongxiaox0728/Real-Estate-Multi-agent-AI-Assistant.git \
+  "$HOME/Real-Estate-Multi-agent-AI-Assistant"
+cd "$HOME/Real-Estate-Multi-agent-AI-Assistant"
+
+for package in Multi-agent-orchestration property-search-agent market-analysis-agent \
+  recommendation-engine-agent RAG-knowledge-agent; do
+  npm --prefix "$package" ci || break
+done
+```
+
+Create a `.env` file in the repository root and set your OpenAI Platform API key. The project uses this key for its own API calls, even if you signed in to OpenClaw with ChatGPT. Keep the file local. Environment variables already set for the process take precedence.
+
+```dotenv
+OPENAI_API_KEY=your_openai_api_key
+```
+
+From the repository root, run:
+
+```bash
+(cd Multi-agent-orchestration && npx tsx src/cli.ts 'What does DOM mean in real estate?')
+```
+
+The response should explain **Days on Market**. This checks the project before you connect it to a chat interface.
+
+### 3. Load the skill and start chatting
+
+Copy the orchestration skill from the repository root. It runs the TypeScript CLI, which calls the individual agents.
+
+```bash
+mkdir -p "$HOME/.openclaw/skills/multi-agent-orchestration"
+cp -i Multi-agent-orchestration/skill/SKILL.md \
+  "$HOME/.openclaw/skills/multi-agent-orchestration/SKILL.md"
+openclaw skills list
+openclaw dashboard
+```
+
+If you cloned elsewhere, update the working directory under **Invocation** in the copied `SKILL.md`. Once `multi-agent-orchestration` appears in the skill list, open a fresh chat in the dashboard and ask **“Use the multi-agent-orchestration skill to explain what DOM means in real estate.”** Check the chat’s tool activity for a call to the project’s `src/cli.ts` to verify that the reply came from this assistant.
+
+### 4. Connect a messaging channel (optional)
+
+| Channel | Setup |
+| --- | --- |
+| **WhatsApp** | Run `openclaw channels login --channel whatsapp` and scan the QR code from **WhatsApp → Linked Devices → Link a Device**. Send a DM from your test account. If OpenClaw asks you to pair that sender, approve its code with `openclaw pairing approve whatsapp CODE`. [WhatsApp setup guide](https://docs.openclaw.ai/channels/whatsapp) |
+| **Telegram** | Create a bot with **@BotFather**, then follow OpenClaw’s Telegram setup guide to configure the bot token and approve your first DM. This is an optional OpenClaw channel. The project demo uses WhatsApp. [Telegram setup guide](https://docs.openclaw.ai/channels/telegram) |
+
+Keep the Gateway running on a machine that can access the project and its data. Try the same DOM question in the connected chat.
+
+### 5. Enable data-dependent features (optional)
+
+| Feature | Additional setup | Example to try |
+| --- | --- | --- |
+| Property search | Import a schema-compatible `rets_property` table into MySQL. | “Find condos in Irvine above $200,000 with 2 bedrooms and 2 bathrooms.” |
+| Market analysis | Import a schema-compatible `california_sold` table into MySQL. Use a city and date range covered by your data. | “What was the average days on market in Irvine in the last six months?” |
+| Recommendations | Provide the MySQL listing and sold data and a matching `recommendation-engine-agent/data/listing_embeddings.json`. | “Find listings similar to listing ID …” using a 10-digit ID in your listing table and embeddings. |
+| Email delivery | Set `EMAIL_USER` and `EMAIL_APP_PASSWORD` for a Gmail sender. Use a [Google App Password](https://support.google.com/accounts/answer/185833). | “Explain what DOM means and email the answer to [your email address].” Review the preview before approving delivery. |
+
+The repository includes the RAG index. You need your own authorized, schema-compatible listing and sold data for the MySQL features. The MLS database dump, schema setup, and listing embeddings are absent from the repository.
+
+With MySQL configured and the listing data loaded, you can generate the recommendation embeddings from the repository root:
+
+```bash
+(cd recommendation-engine-agent && npx tsx src/build-listing-embeddings.ts)
+```
+
+Embedding generation makes OpenAI API calls for your listing data.
+
 ## 🚀 Future Improvements
 
 ### Persistent Conversation Memory for Property Search

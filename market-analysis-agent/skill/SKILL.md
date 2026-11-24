@@ -1,15 +1,10 @@
----
-name: california-market-analytics
-description: Answer California city-level housing market questions using the local market-analysis TypeScript workflow and historical sold-property data from california_sold.
----
-
 # California Market Analytics
 
-Use this skill when a user wants aggregated or historical California housing market analysis for a city.
+This skill is designed when a user wants aggregated or historical California housing market analysis for a city.
 
 This skill only analyzes sold-market data from `california_sold`. It does not search active listings.
 
-Use the `active-listing-agent` skill when the user wants to find active homes with filters such as city, price, property type, bedrooms, bathrooms, square footage, HOA, pool, or view.
+Use the `property-search-agent` skill when the user wants to find active homes with filters such as city, price, property type, bedrooms, bathrooms, square footage, HOA, pool, or view.
 
 ## Inputs
 
@@ -282,30 +277,6 @@ Agent: [DOM-based classification produced by the local market-condition workflow
 
 User: Is now a good time to buy in Irvine?
 Agent: [3-month 5-indicator score produced by the local market-condition workflow]
-```
-
-### Market-analysis flow
-
-```text
-User market question
-    ↓
-answerMarketQuestion.ts
-    ↓
-marketCities.ts
-    ↓
-parseMarketQuery.ts
-    ↓
-question-type-router.ts
-    ↓
-question type
-    ├── market summary   -> market-summary.ts
-    ├── market metric    -> marketMetric.ts
-    ├── market trend     -> market-trend.ts
-    └── market condition -> market-condition.ts
-    ↓
-marketResponseFormatter.ts
-    ↓
-return formatted response
 ```
 
 ## Database Access

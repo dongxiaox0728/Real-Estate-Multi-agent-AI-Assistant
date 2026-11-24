@@ -1,4 +1,3 @@
-import "dotenv/config";
 import readline from "readline";
 import { orchestrate } from "./orchestrator";
 

@@ -1,8 +1,3 @@
----
-name: rag-knowledge-agent
-description: Use for real-estate knowledge questions, especially DOM (Days on Market), escrow, comps, list-to-close ratio, cap rate, MLS/RESO field definitions, california_sold columns, rets_property fields, and IDX/RETS schema mappings. Prefer this skill over general model knowledge for these topics because answers must be grounded in the indexed Real Estate Primer, Trestle metadata, and IDX/RETS schema reference documents.
----
-
 # RAG Knowledge Agent
 
 ## Purpose

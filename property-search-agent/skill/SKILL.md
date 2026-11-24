@@ -1,9 +1,4 @@
----
-name: active-listing-agent
-description: Search active California listings through a multi-turn conversation that remembers and refines property preferences.
----
-
-# Active Listing Agent
+# Property Search Agent
 
 Use this skill when a user wants to find active property listings using structured listing filters.
 

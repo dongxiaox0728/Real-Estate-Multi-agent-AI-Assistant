@@ -1,5 +1,4 @@
 import readline from "readline";
-import "dotenv/config";
 import { answerKnowledgeQuestion } from "./final-orchestrator";
 
 async function main() {
